@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from sklearn.cluster import KMeans
 
 if __name__ == "__main__":
     df = pd.read_csv("data/24250201.csv")
@@ -51,3 +52,24 @@ if __name__ == "__main__":
             print(f"及格率: {pass_rate:.2f}%")
             print(f"不及格率: {fail_rate:.2f}%")
             print("-" * 40)
+
+    data = []
+    for idx, row in df.iterrows():
+        data.append([row['语文'], row['数学'], row['英语']])
+    data = np.array(data)
+    # 创建 KMeans 实例
+    kmeans = KMeans(n_clusters=5, random_state=0)
+    # 对数据进行拟合
+    kmeans.fit(data)
+    # 预测簇标签
+    labels = kmeans.predict(data)
+    # 获取簇中心点
+    centroids = kmeans.cluster_centers_
+    # 打印结果
+    print("Labels:", labels)
+    print("Centroids:", centroids)
+    # 可视化结果
+    import matplotlib.pyplot as plt
+    plt.scatter(data[:, 0], data[:, 1], data[:, 2], c=labels, s=50, cmap='viridis')
+    plt.scatter(centroids[:, 0], centroids[:, 1], centroids[:, 2], c='red', s=200, alpha=0.5)  # 绘制中心点
+    plt.savefig('kmeans_result.png')
